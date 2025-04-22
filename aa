@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import sqlite3
 
-# Initialize the database
+
 conn = sqlite3.connect("calculator_history.db")
 cursor = conn.cursor()
 cursor.execute("""
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS history (
 """)
 conn.commit()
 
-# Function to evaluate expressions
+
 def calculate():
     expression = entry.get()
     try:
@@ -22,17 +22,16 @@ def calculate():
         entry.delete(0, tk.END)
         entry.insert(tk.END, result)
 
-        # Save to DB
+        
         cursor.execute("INSERT INTO history (expression, result) VALUES (?, ?)", (expression, result))
         conn.commit()
 
     except Exception as e:
-        messagebox.showerror("Error", f"Invalid Expression\n{e}")
+        messagebox.showerror("Kļūda", f"Nav iespējams\n{e}")
 
-# Function to view history
 def show_history():
     history_window = tk.Toplevel(root)
-    history_window.title("Calculation History")
+    history_window.title("Vēsture")
 
     cursor.execute("SELECT expression, result FROM history ORDER BY id DESC LIMIT 10")
     rows = cursor.fetchall()
@@ -41,9 +40,8 @@ def show_history():
         label = tk.Label(history_window, text=f"{expression} = {result}")
         label.pack()
 
-# GUI Setup
 root = tk.Tk()
-root.title("Python Calculator with DB")
+root.title("Kalkulators")
 
 entry = tk.Entry(root, width=30, font=('Arial', 18))
 entry.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
@@ -55,7 +53,7 @@ buttons = [
     '0', '.', '=', '+'
 ]
 
-# Add buttons
+
 row = 1
 col = 0
 for button in buttons:
@@ -71,11 +69,11 @@ for button in buttons:
         col = 0
         row += 1
 
-# History and Clear Buttons
-tk.Button(root, text='History', width=10, command=show_history).grid(row=row, column=0, columnspan=2)
-tk.Button(root, text='Clear', width=10, command=lambda: entry.delete(0, tk.END)).grid(row=row, column=2, columnspan=2)
+
+tk.Button(root, text='Vēsture', width=10, command=show_history).grid(row=row, column=0, columnspan=2)
+tk.Button(root, text='Izdzēst visu', width=10, command=lambda: entry.delete(0, tk.END)).grid(row=row, column=2, columnspan=2)
 
 root.mainloop()
 
-# Close DB on exit
+
 conn.close()
